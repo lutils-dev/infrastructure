@@ -1,0 +1,13 @@
+environment = "staging"
+domain_prefix = "staging"
+subnet_id = "subnet-xxxxxx"
+security_group_ids = ["sg-xxxxxx"]
+key_name = "lazysheet-api-staging"
+
+# App configuration
+app_port = 8000
+db_host = "your-db-host"
+db_port = 5432
+db_username = "postgres"
+db_password = "your-db-password"
+db_database = "lazysheet_api_db"
