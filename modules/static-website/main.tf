@@ -1,3 +1,5 @@
+data "aws_region" "current" {}
+
 resource "aws_s3_bucket" "this" {
   bucket = var.bucket_name
 }
@@ -15,7 +17,7 @@ resource "aws_s3_bucket_ownership_controls" "this" {
   bucket = aws_s3_bucket.this.id
   
   rule {
-    object_ownership = "BucketOwnerPreferred"
+    object_ownership = "BucketOwnerEnforced"
   }
 }
 
@@ -56,20 +58,20 @@ resource "aws_cloudfront_distribution" "this" {
 
   origin {
     domain_name = aws_s3_bucket_website_configuration.this.website_endpoint
-    origin_id   = var.origin_id
+    origin_id   = "${var.bucket_name}.s3-website-${data.aws_region.current.name}.amazonaws.com"
 
     custom_origin_config {
       http_port              = 80
       https_port             = 443
       origin_protocol_policy = "http-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
+      origin_ssl_protocols   = ["SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"]
     }
   }
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = var.origin_id
+    target_origin_id = "${var.bucket_name}.s3-website-${data.aws_region.current.name}.amazonaws.com"
     compress         = true
 
     viewer_protocol_policy = var.viewer_protocol_policy
